@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .quiz-header {
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .quiz-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(102,126,234,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .question {
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .question h3 {
+            margin-bottom: 20px;
+            color: #2d3748;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(247,250,252,0.8);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .option-label:hover {
+            background: rgba(102,126,234,0.1);
+            border-color: rgba(102,126,234,0.3);
+            transform: translateX(5px);
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .option-label:has(input:checked) {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(72,187,120,0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(72,187,120,0.6);
+        }
+
+        .result-section {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #48bb78;
+            margin: 20px 0;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="javascript:history.back()" class="back-btn">← Back</a>
+        
+        <div class="quiz-header">
+            <h1>Chapter Quiz</h1>
+            <div class="quiz-info">
+                <div class="info-item">
+                    <div class="info-label">Student</div>
+                    <div class="info-value" id="student-name"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Subject</div>
+                    <div class="info-value" id="subject-name"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Chapter</div>
+                    <div class="info-value" id="chapter-name"></div>
+                </div>
+            </div>
+        </div>
+        
+        <form id="quiz-form">
+            <div id="questions-container">
+                <!-- Questions will be loaded here -->
+            </div>
+            <button type="submit" class="submit-btn">Submit Quiz 📝</button>
+        </form>
+
+        <div id="result" class="result-section">
+            <h2>🎉 Quiz Completed!</h2>
+            <div class="score-display" id="score"></div>
+            <p>Great job on completing the quiz!</p>
+            <br>
+            <a href="/" class="back-btn">🏠 Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestions = [];
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const pathParts = window.location.pathname.split('/');
+            const studentName = pathParts[2];
+            const subject = pathParts[3];
+            const chapter = decodeURIComponent(pathParts[4]);
+
+            document.getElementById('student-name').textContent = studentName;
+            document.getElementById('subject-name').textContent = subject;
+            document.getElementById('chapter-name').textContent = chapter;
+
+            try {
+                const response = await fetch(`/api/questions/${subject}/${encodeURIComponent(chapter)}`);
+                currentQuestions = await response.json();
+                
+                const container = document.getElementById('questions-container');
+                
+                currentQuestions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question';
+                    
+                    questionDiv.innerHTML = `
+                        <h3>${index + 1}. ${question.question}</h3>
+                        <div class="options-grid">
+                            ${question.options.map((option, optIndex) => `
+                                <label class="option-label">
+                                    <input type="radio" name="q${index + 1}" value="${String.fromCharCode(65 + optIndex)}">
+                                    ${option}
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    container.appendChild(questionDiv);
+                });
+            } catch (error) {
+                console.error('Error loading questions:', error);
+            }
+
+            // Handle form submission
+            document.getElementById('quiz-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const answers = [];
+                for (let i = 1; i <= currentQuestions.length; i++) {
+                    const answer = document.querySelector(`input[name="q${i}"]:checked`);
+                    answers.push(answer ? answer.value : null);
+                }
+
+                try {
+                    const response = await fetch('/api/submit-quiz', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            studentName,
+                            subject,
+                            chapter,
+                            answers
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        document.getElementById('quiz-form').style.display = 'none';
+                        document.getElementById('result').classList.add('show');
+                        document.getElementById('score').textContent = `${result.score}/${result.total}`;
+                    } else {
+                        alert('Error submitting quiz: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error submitting quiz. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
